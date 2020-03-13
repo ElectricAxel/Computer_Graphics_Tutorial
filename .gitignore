@@ -1,5 +1,6 @@
 premake4.exe
 *.lua
+.vscode/settings.json
 Tutorial/TutorialsComp.pdf
 Tutorial/TutorialsKindle.pdf
 Tutorial/TutorialsPrintBW.pdf
