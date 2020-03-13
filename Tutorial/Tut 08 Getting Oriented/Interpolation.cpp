@@ -122,9 +122,18 @@ glm::vec4 Vectorize(const glm::fquat theQuat) {
   return ret;
 }
 
-glm::fquat Lerp(const glm::fquat &v0, const glm::fquat &v1, float alpha) {
+glm::fquat Lerp(const glm::fquat &v0, const glm::fquat &v1, float alpha, bool bLongPath) {
   glm::vec4 start = Vectorize(v0);
   glm::vec4 end = Vectorize(v1);
+
+  /*if the dot is less than 0, it'll be the long path
+    here we compare if the computed path is the same as the desired path
+    in case they're not, for example, computed path is long but desired
+    is short, we conjugate the destiny.*/
+  if((glm::dot(start, end) < 0) != bLongPath) {
+    end = -end;
+  }
+
   glm::vec4 interp = glm::mix(start, end, alpha);
 
   printf("alpha: %f, (%f, %f, %f, %f)\n", alpha, interp.w, interp.x, interp.y,
@@ -134,12 +143,21 @@ glm::fquat Lerp(const glm::fquat &v0, const glm::fquat &v1, float alpha) {
   return glm::fquat(interp.w, interp.x, interp.y, interp.z);
 }
 
-glm::fquat Slerp(const glm::fquat &v0, const glm::fquat &v1, float alpha) {
+glm::fquat Slerp(const glm::fquat &v0, glm::fquat v1, float alpha, bool bLongPath) {
   float dot = glm::dot(v0, v1);
+
+  /*if the dot is less than 0, it'll be the long path
+    here we compare if the computed path is the same as the desired path
+    in case they're not, for example, computed path is long but desired
+    is short, we conjugate the destiny.*/
+  if((dot < 0) != bLongPath) {
+    v1 = -v1;
+    dot = glm::dot(v0, v1);
+  }
 
   const float DOT_THRESHOLD = 0.9995f;
   if (dot > DOT_THRESHOLD)
-    return Lerp(v0, v1, alpha);
+    return Lerp(v0, v1, alpha, bLongPath);
 
   glm::clamp(dot, -1.0f, 1.0f);
   float theta_0 = acosf(dot);
@@ -153,18 +171,23 @@ glm::fquat Slerp(const glm::fquat &v0, const glm::fquat &v1, float alpha) {
 
 class Orientation {
 public:
-  Orientation() : m_ixCurrOrient(0), m_bSlerp(false) {}
+  Orientation() : m_ixCurrOrient(0), m_bSlerp(false), m_bLongPath(false) {}
 
   bool ToggleSlerp() {
     m_bSlerp = !m_bSlerp;
     return m_bSlerp;
   }
 
+  bool ToggleLongPath() {
+    m_bLongPath = !m_bLongPath;
+    return m_bLongPath;
+  }
+
   glm::fquat GetOrient() const {
     auto currOrient = g_Orients[m_ixCurrOrient];
 
 		for (auto anim : m_anim) {
-			currOrient = anim.GetOrient(currOrient, m_bSlerp);
+			currOrient = anim.GetOrient(currOrient, m_bSlerp, m_bLongPath);
 		}
 
     return currOrient;
@@ -202,13 +225,13 @@ private:
     // Returns true if the animation is over.
     bool UpdateTime() { return m_currTimer.Update(); }
 
-    glm::fquat GetOrient(const glm::fquat &initial, bool bSlerp) const {
+    glm::fquat GetOrient(const glm::fquat &initial, bool bSlerp, bool bLongPath) const {
       if (bSlerp) {
         return Slerp(initial, g_Orients[m_ixFinalOrient],
-                     m_currTimer.GetAlpha());
+                     m_currTimer.GetAlpha(), bLongPath);
       } else {
         return Lerp(initial, g_Orients[m_ixFinalOrient],
-                    m_currTimer.GetAlpha());
+                    m_currTimer.GetAlpha(), bLongPath);
       }
 
       return initial;
@@ -228,6 +251,7 @@ private:
 
   int m_ixCurrOrient;
   bool m_bSlerp;
+  bool m_bLongPath;
 
   std::deque<Animation> m_anim;
 };
@@ -303,6 +327,10 @@ void keyboard(unsigned char key, int x, int y) {
   case 32: {
     bool bSlerp = g_orient.ToggleSlerp();
     printf(bSlerp ? "Slerp\n" : "Lerp\n");
+  } break;
+  case 'l': {
+    bool bLongPath = g_orient.ToggleLongPath();
+    printf(bLongPath ? "LongPath\n" : "ShortPath\n");
   } break;
   }
 
