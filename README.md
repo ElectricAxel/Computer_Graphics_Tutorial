@@ -11,3 +11,15 @@ The License.txt file contains the licensing information for the materials distri
 I've been using VS Code as my IDE of choice. 
 I've had to use the msys bash installed along MingW to be able to use the 'make' command. 
 To set up the make command, I followed the instructions in the book. Downloaded Premake 4, ran Premake4.exe gmake on the root, and also had to run Premake4.exe gmake on every tutorial folder. There's a slight bug where the Make files are missing double quotes nearly at the end, and because the Tutorial Folders all have spaces in them, the make doesn't work. After adding the double quotation marks around the command, make works fine.
+
+Here's an example of the line that causes such error:
+
+```
+$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF $(@:%.o=%.d) -c "$<"
+```
+
+And here's the fixed version:
+
+```
+$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+```
