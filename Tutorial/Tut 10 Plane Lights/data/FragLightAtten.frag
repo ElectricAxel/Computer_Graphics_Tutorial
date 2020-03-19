@@ -12,8 +12,7 @@ uniform vec4 ambientIntensity;
 
 uniform vec3 cameraSpaceLightPos;
 
-uniform float lightAttenuation;
-uniform bool bUseRSquare;
+uniform float maxDistance;
 
 uniform UnProjection
 {
@@ -40,9 +39,7 @@ vec4 ApplyLightIntensity(in vec3 cameraSpacePosition, out vec3 lightDirection)
 	float lightDistanceSqr = dot(lightDifference, lightDifference);
 	lightDirection = lightDifference * inversesqrt(lightDistanceSqr);
 	
-	float distFactor = bUseRSquare ? lightDistanceSqr : sqrt(lightDistanceSqr);
-
-	return lightIntensity * (1 / ( 1.0 + lightAttenuation * distFactor));
+	return lightIntensity * clamp((maxDistance - sqrt(lightDistanceSqr)) / maxDistance, 0, 1);
 }
 
 void main()
