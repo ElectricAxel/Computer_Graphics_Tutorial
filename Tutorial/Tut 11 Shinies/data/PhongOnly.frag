@@ -15,7 +15,7 @@ uniform vec3 cameraSpaceLightPos;
 
 uniform float lightAttenuation;
 
-const vec4 specularColor = vec4(0.25, 0.25, 0.25, 1.0);
+//const vec4 specularColor = vec4(0.25, 0.25, 0.25, 1.0);
 uniform float shininessFactor;
 
 
@@ -43,6 +43,6 @@ void main()
 	phongTerm = dot(surfaceNormal, lightDir) > 0.0 ? phongTerm : 0.0;
 	phongTerm = pow(phongTerm, shininessFactor);
 	
-	outputColor = (specularColor * attenIntensity * phongTerm) +
+	outputColor = (diffuseColor * attenIntensity * phongTerm) +
 		(diffuseColor * ambientIntensity);
 }
