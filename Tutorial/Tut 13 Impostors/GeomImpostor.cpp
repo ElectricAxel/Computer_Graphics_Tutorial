@@ -302,14 +302,16 @@ void init()
 
 	glGenBuffers(1, &g_imposterVBO);
 	glBindBuffer(GL_ARRAY_BUFFER, g_imposterVBO);
-	glBufferData(GL_ARRAY_BUFFER, NUMBER_OF_SPHERES * 4 * sizeof(float), NULL, GL_STREAM_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, NUMBER_OF_SPHERES * 5 * sizeof(float), NULL, GL_STREAM_DRAW);
 
 	glGenVertexArrays(1, &g_imposterVAO);
 	glBindVertexArray(g_imposterVAO);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 16, (void*)(0));
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 20, (void*)(0));
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 16, (void*)(12));
+	glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 20, (void*)(12));
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, 20, (void*)(16));
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -368,6 +370,7 @@ struct VertexData
 {
 	glm::vec3 cameraPosition;
 	float sphereRadius;
+	float materialIndex;
 };
 
 //Called to update the display.
@@ -426,21 +429,25 @@ void display()
 
 			posSizeArray[0].cameraPosition = glm::vec3(worldToCamMat * glm::vec4(0.0f, 10.0f, 0.0f, 1.0f));
 			posSizeArray[0].sphereRadius = 4.0f;
+			posSizeArray[0].materialIndex = 0.0f;
 
 			posSizeArray[1].cameraPosition = GetSphereOrbitPos(modelMatrix,
 				glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(0.6f, 0.8f, 0.0f), 20.0f,
 				g_sphereTimer.GetAlpha());
 			posSizeArray[1].sphereRadius = 2.0f;
+			posSizeArray[1].materialIndex = 1.0f;
 
 			posSizeArray[2].cameraPosition = GetSphereOrbitPos(modelMatrix,
 				glm::vec3(-10.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f),
 				10.0f, g_sphereTimer.GetAlpha());
 			posSizeArray[2].sphereRadius = 1.0f;
+			posSizeArray[2].materialIndex = 2.0f;
 
 			posSizeArray[3].cameraPosition = GetSphereOrbitPos(modelMatrix,
 				glm::vec3(10.0f, 1.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f),
 				10.0f, g_sphereTimer.GetAlpha() * 2.0f);
 			posSizeArray[3].sphereRadius = 1.0f;
+			posSizeArray[3].materialIndex = 3.0f;
 
 			glBindBuffer(GL_ARRAY_BUFFER, g_imposterVBO);
 			glBufferData(GL_ARRAY_BUFFER, NUMBER_OF_SPHERES * sizeof(VertexData), posSizeArray,

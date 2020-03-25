@@ -14,6 +14,7 @@ in VertexData
 {
 	vec3 cameraSpherePos;
 	float sphereRadius;
+	int materialIndex;
 } vert[];
 
 out FragData
@@ -21,6 +22,7 @@ out FragData
 	flat vec3 cameraSpherePos;
 	flat float sphereRadius;
 	smooth vec2 mapping;
+	flat int materialIndex;
 };
 
 const float g_boxCorrection = 1.5;
@@ -35,7 +37,7 @@ void main()
 	cameraCornerPos = vec4(vert[0].cameraSpherePos, 1.0);
 	cameraCornerPos.xy += vec2(-vert[0].sphereRadius, -vert[0].sphereRadius) * g_boxCorrection;
 	gl_Position = cameraToClipMatrix * cameraCornerPos;
-	gl_PrimitiveID = gl_PrimitiveIDIn;
+	materialIndex = vert[0].materialIndex;
 	EmitVertex();
 	
 	//Top-left
@@ -45,7 +47,7 @@ void main()
 	cameraCornerPos = vec4(vert[0].cameraSpherePos, 1.0);
 	cameraCornerPos.xy += vec2(-vert[0].sphereRadius, vert[0].sphereRadius) * g_boxCorrection;
 	gl_Position = cameraToClipMatrix * cameraCornerPos;
-	gl_PrimitiveID = gl_PrimitiveIDIn;
+	materialIndex = vert[0].materialIndex;
 	EmitVertex();
 	
 	//Bottom-right
@@ -55,7 +57,7 @@ void main()
 	cameraCornerPos = vec4(vert[0].cameraSpherePos, 1.0);
 	cameraCornerPos.xy += vec2(vert[0].sphereRadius, -vert[0].sphereRadius) * g_boxCorrection;
 	gl_Position = cameraToClipMatrix * cameraCornerPos;
-	gl_PrimitiveID = gl_PrimitiveIDIn;
+	materialIndex = vert[0].materialIndex;
 	EmitVertex();
 	
 	//Top-right
@@ -65,6 +67,6 @@ void main()
 	cameraCornerPos = vec4(vert[0].cameraSpherePos, 1.0);
 	cameraCornerPos.xy += vec2(vert[0].sphereRadius, vert[0].sphereRadius) * g_boxCorrection;
 	gl_Position = cameraToClipMatrix * cameraCornerPos;
-	gl_PrimitiveID = gl_PrimitiveIDIn;
+	materialIndex = vert[0].materialIndex;
 	EmitVertex();
 }

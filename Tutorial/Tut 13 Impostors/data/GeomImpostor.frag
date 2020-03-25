@@ -6,6 +6,7 @@ in FragData
 	flat vec3 cameraSpherePos;
 	flat float sphereRadius;
 	smooth vec2 mapping;
+	flat int materialIndex;
 };
 
 out vec4 outputColor;
@@ -130,11 +131,11 @@ void main()
 	float ndcDepth = clipPos.z / clipPos.w;
 	gl_FragDepth = ((gl_DepthRange.diff * ndcDepth) + gl_DepthRange.near + gl_DepthRange.far) / 2.0;
 	
-	vec4 accumLighting = Mtl.material[gl_PrimitiveID].diffuseColor * Lgt.ambientIntensity;
+	vec4 accumLighting = Mtl.material[materialIndex].diffuseColor * Lgt.ambientIntensity;
 	for(int light = 0; light < numberOfLights; light++)
 	{
 		accumLighting += ComputeLighting(Lgt.lights[light],
-			cameraPos, cameraNormal, Mtl.material[gl_PrimitiveID]);
+			cameraPos, cameraNormal, Mtl.material[materialIndex]);
 	}
 	
 	outputColor = sqrt(accumLighting); //2.0 gamma correction
