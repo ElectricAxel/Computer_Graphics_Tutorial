@@ -35,11 +35,6 @@ glm::vec4 CalcLightPosition(const Framework::Timer &timer, float alphaOffset)
 const float g_fHalfLightDistance = 70.0f;
 const float g_fLightAttenuation = 1.0f / (g_fHalfLightDistance * g_fHalfLightDistance);
 
-float distance(const glm::vec3 &lhs, const glm::vec3 &rhs)
-{
-	return glm::length(rhs - lhs);
-}
-
 LightManager::LightManager()
 	: m_sunTimer(Framework::Timer::TT_LOOP, 30.0f)
 	, m_ambientInterpolator()
@@ -122,16 +117,6 @@ LightManager::LightManager()
 	m_lightPos[2].SetValues(posValues);
 	m_lightTimers.push_back(Framework::Timer(Framework::Timer::TT_LOOP, 15.0f));
 }
-
-typedef std::pair<float, float> MaxIntensityData;
-typedef std::vector<MaxIntensityData> MaxIntensityVector;
-typedef std::pair<glm::vec4, float> LightVectorData;
-typedef std::vector<LightVectorData> LightVector;
-
-glm::vec4 GetValue(const LightVectorData &data) {return data.first;}
-float GetTime(const LightVectorData &data) {return data.second;}
-float GetValue(const MaxIntensityData &data) {return data.first;}
-float GetTime(const MaxIntensityData &data) {return data.second;}
 
 void LightManager::SetSunlightValues( SunlightValue *pValues, int iSize )
 {
