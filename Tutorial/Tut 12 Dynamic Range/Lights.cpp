@@ -19,7 +19,6 @@ static float g_fLightRadius = 70.0f;
 
 glm::vec4 CalcLightPosition(const Framework::Timer &timer, float alphaOffset)
 {
-	const float fLoopDuration = 5.0f;
 	const float fScale = 3.14159f * 2.0f;
 
 	float timeThroughLoop = timer.GetAlpha() + alphaOffset;
@@ -41,9 +40,8 @@ LightManager::LightManager()
 {
 	m_lightTimers.reserve(NUMBER_OF_POINT_LIGHTS);
 	m_lightPos.reserve(NUMBER_OF_POINT_LIGHTS);
-	m_lightPos.push_back(LightInterpolator());
-	m_lightPos.push_back(LightInterpolator());
-	m_lightPos.push_back(LightInterpolator());
+	for(size_t _ = 0; _ < NUMBER_OF_POINT_LIGHTS; ++_)
+		m_lightPos.push_back(LightInterpolator());
 
 	m_lightIntensity.resize(NUMBER_OF_POINT_LIGHTS, glm::vec4(0.2f, 0.2f, 0.2f, 1.0f));
 
@@ -143,20 +141,23 @@ void LightManager::SetSunlightValues( SunlightValue *pValues, int iSize )
 void LightManager::SetSunlightValues( SunlightValueHDR *pValues, int iSize )
 {
 	LightVector ambient;
-	LightVector light;
+	LightVector sunlight;
+	LightVector moonlight;
 	LightVector background;
 	MaxIntensityVector maxIntensity;
 
 	for(int valIx = 0; valIx < iSize; ++valIx)
 	{
 		ambient.push_back(LightVectorData(pValues[valIx].ambient, pValues[valIx].normTime));
-		light.push_back(LightVectorData(pValues[valIx].sunlightIntensity, pValues[valIx].normTime));
+		sunlight.push_back(LightVectorData(pValues[valIx].sunlightIntensity, pValues[valIx].normTime));
+		moonlight.push_back(LightVectorData(pValues[valIx].moonlightIntensity, pValues[valIx].normTime));
 		background.push_back(LightVectorData(pValues[valIx].backgroundColor, pValues[valIx].normTime));
 		maxIntensity.push_back(MaxIntensityData(pValues[valIx].maxIntensity, pValues[valIx].normTime));
 	}
 
 	m_ambientInterpolator.SetValues(ambient);
-	m_sunlightInterpolator.SetValues(light);
+	m_sunlightInterpolator.SetValues(sunlight);
+	m_moonlightInterpolator.SetValues(moonlight);
 	m_backgroundInterpolator.SetValues(background);
 	m_maxIntensityInterpolator.SetValues(maxIntensity);
 }
@@ -273,8 +274,8 @@ LightBlock LightManager::GetLightInformation( const glm::mat4 &worldToCameraMat 
 			glm::vec4(m_lightPos[light].Interpolate(m_lightTimers[light].GetAlpha()), 1.0f);
 		glm::vec4 lightPosCameraSpace = worldToCameraMat * worldLightPos;
 
-		lightData.lights[light + 1].cameraSpaceLightPos = lightPosCameraSpace;
-		lightData.lights[light + 1].lightIntensity = m_lightIntensity[light];
+		lightData.lights[light + NUMBER_OF_LIGHTS - NUMBER_OF_POINT_LIGHTS].cameraSpaceLightPos = lightPosCameraSpace;
+		lightData.lights[light + NUMBER_OF_LIGHTS - NUMBER_OF_POINT_LIGHTS].lightIntensity = m_lightIntensity[light];
 	}
 
 	return lightData;
@@ -293,14 +294,18 @@ LightBlockHDR LightManager::GetLightInformationHDR( const glm::mat4 &worldToCame
 		worldToCameraMat * GetSunlightDirection();
 	lightData.lights[0].lightIntensity = m_sunlightInterpolator.Interpolate(m_sunTimer.GetAlpha());
 
+	lightData.lights[1].cameraSpaceLightPos =
+		worldToCameraMat * -GetSunlightDirection();
+	lightData.lights[1].lightIntensity = m_moonlightInterpolator.Interpolate(m_sunTimer.GetAlpha());
+
 	for(int light = 0; light < NUMBER_OF_POINT_LIGHTS; light++)
 	{
 		glm::vec4 worldLightPos =
 			glm::vec4(m_lightPos[light].Interpolate(m_lightTimers[light].GetAlpha()), 1.0f);
 		glm::vec4 lightPosCameraSpace = worldToCameraMat * worldLightPos;
 
-		lightData.lights[light + 1].cameraSpaceLightPos = lightPosCameraSpace;
-		lightData.lights[light + 1].lightIntensity = m_lightIntensity[light];
+		lightData.lights[light + NUMBER_OF_LIGHTS - NUMBER_OF_POINT_LIGHTS].cameraSpaceLightPos = lightPosCameraSpace;
+		lightData.lights[light + NUMBER_OF_LIGHTS - NUMBER_OF_POINT_LIGHTS].lightIntensity = m_lightIntensity[light];
 	}
 
 	return lightData;
@@ -332,6 +337,11 @@ glm::vec4 LightManager::GetSunlightDirection() const
 glm::vec4 LightManager::GetSunlightIntensity() const
 {
 	return m_sunlightInterpolator.Interpolate(m_sunTimer.GetAlpha());
+}
+
+glm::vec4 LightManager::GetMoonlightIntensity() const
+{
+	return m_moonlightInterpolator.Interpolate(m_sunTimer.GetAlpha());
 }
 
 int LightManager::GetNumberOfPointLights() const

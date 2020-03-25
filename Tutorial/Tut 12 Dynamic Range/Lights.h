@@ -221,8 +221,8 @@ struct PerLight
 	glm::vec4 lightIntensity;
 };
 
-const int NUMBER_OF_LIGHTS = 4;
-const int NUMBER_OF_POINT_LIGHTS = NUMBER_OF_LIGHTS - 1;
+const int NUMBER_OF_LIGHTS = 5;
+const int NUMBER_OF_POINT_LIGHTS = NUMBER_OF_LIGHTS - 2;
 
 struct LightBlock
 {
@@ -264,6 +264,7 @@ struct SunlightValueHDR
 	float normTime;
 	glm::vec4 ambient;
 	glm::vec4 sunlightIntensity;
+	glm::vec4 moonlightIntensity;
 	glm::vec4 backgroundColor;
 	float maxIntensity;
 };
@@ -301,6 +302,7 @@ public:
 
 	glm::vec4 GetSunlightDirection() const;
 	glm::vec4 GetSunlightIntensity() const;
+	glm::vec4 GetMoonlightIntensity() const;
 
 	int GetNumberOfPointLights() const;
 	glm::vec3 GetWorldLightPosition(int iLightIx) const;
@@ -319,6 +321,7 @@ private:
 	Framework::TimedLinearInterpolator<glm::vec4> m_ambientInterpolator;
 	Framework::TimedLinearInterpolator<glm::vec4> m_backgroundInterpolator;
 	Framework::TimedLinearInterpolator<glm::vec4> m_sunlightInterpolator;
+	Framework::TimedLinearInterpolator<glm::vec4> m_moonlightInterpolator;
 	Framework::TimedLinearInterpolator<float> m_maxIntensityInterpolator;
 
 	std::vector<LightInterpolator> m_lightPos;

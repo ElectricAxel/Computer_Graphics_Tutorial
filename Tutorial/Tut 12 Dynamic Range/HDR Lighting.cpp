@@ -224,13 +224,13 @@ void SetupHDRLighting()
 {
 	SunlightValueHDR values[] =
 	{
-		{ 0.0f/24.0f, glm::vec4(0.6f, 0.6f, 0.6f, 1.0f), glm::vec4(1.8f, 1.8f, 1.8f, 1.0f), g_skyDaylightColor, 3.0f},
-		{ 4.5f/24.0f, glm::vec4(0.6f, 0.6f, 0.6f, 1.0f), glm::vec4(1.8f, 1.8f, 1.8f, 1.0f), g_skyDaylightColor, 3.0f},
-		{ 6.5f/24.0f, glm::vec4(0.225f, 0.075f, 0.075f, 1.0f), glm::vec4(0.45f, 0.15f, 0.15f, 1.0f), glm::vec4(0.5f, 0.1f, 0.1f, 1.0f), 1.5f},
-		{ 8.0f/24.0f, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 1.0f},
-		{18.0f/24.0f, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 1.0f},
-		{19.5f/24.0f, glm::vec4(0.225f, 0.075f, 0.075f, 1.0f), glm::vec4(0.45f, 0.15f, 0.15f, 1.0f), glm::vec4(0.5f, 0.1f, 0.1f, 1.0f), 1.5f},
-		{20.5f/24.0f, glm::vec4(0.6f, 0.6f, 0.6f, 1.0f), glm::vec4(1.8f, 1.8f, 1.8f, 1.0f), g_skyDaylightColor, 3.0f},
+		{ 0.0f/24.0f, glm::vec4(0.6f, 0.6f, 0.6f, 1.0f), glm::vec4(1.8f, 1.8f, 1.8f, 1.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), g_skyDaylightColor, 3.0f},
+		{ 4.5f/24.0f, glm::vec4(0.6f, 0.6f, 0.6f, 1.0f), glm::vec4(1.8f, 1.8f, 1.8f, 1.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), g_skyDaylightColor, 3.0f},
+		{ 6.5f/24.0f, glm::vec4(0.225f, 0.075f, 0.075f, 1.0f), glm::vec4(0.45f, 0.15f, 0.15f, 1.0f), glm::vec4(0.05f, 0.05f, 0.1f, 1.0f), glm::vec4(0.5f, 0.1f, 0.1f, 1.0f), 1.5f},
+		{ 8.0f/24.0f, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.15f, 0.15f, 0.3f, 1.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 1.0f},
+		{18.0f/24.0f, glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(0.15f, 0.15f, 0.3f, 1.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), 1.0f},
+		{19.5f/24.0f, glm::vec4(0.225f, 0.075f, 0.075f, 1.0f), glm::vec4(0.45f, 0.15f, 0.15f, 1.0f), glm::vec4(0.05f, 0.05f, 0.1f, 1.0f), glm::vec4(0.5f, 0.1f, 0.1f, 1.0f), 1.5f},
+		{20.5f/24.0f, glm::vec4(0.6f, 0.6f, 0.6f, 1.0f), glm::vec4(1.8f, 1.8f, 1.8f, 1.0f), glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), g_skyDaylightColor, 3.0f},
 	};
 
 	g_lights.SetSunlightValues(values, 7);
@@ -348,7 +348,7 @@ void display()
 			glUniform4fv(g_Unlit.objectColorUnif, 1, glm::value_ptr(lightColor));
 			g_pScene->GetSphereMesh()->Render("flat");
 		}
-
+		
 		//Render the lights
 		if(g_bDrawLights)
 		{
