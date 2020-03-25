@@ -102,6 +102,11 @@ void main()
 	
 	Impostor(cameraPos, cameraNormal);
 	
+	//Set the depth based on the new cameraPos.
+	vec4 clipPos = cameraToClipMatrix * vec4(cameraPos, 1.0);
+	float ndcDepth = clipPos.z / clipPos.w;
+	gl_FragDepth = ((gl_DepthRange.diff * ndcDepth) + gl_DepthRange.near + gl_DepthRange.far) / 2.0;
+	
 	vec4 accumLighting = Mtl.diffuseColor * Lgt.ambientIntensity;
 	for(int light = 0; light < numberOfLights; light++)
 	{
