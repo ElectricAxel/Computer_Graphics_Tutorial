@@ -21,7 +21,7 @@ struct PerLight
 	vec4 lightIntensity;
 };
 
-const int numberOfLights = 4;
+const int numberOfLights = 5;
 
 uniform Light
 {
